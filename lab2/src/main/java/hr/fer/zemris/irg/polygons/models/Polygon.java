@@ -31,6 +31,7 @@ public class Polygon {
         }
     }
 
+
     private void polygonCoef() {
         int n = elements.size();
         int start = n - 1;
@@ -101,6 +102,10 @@ public class Polygon {
         polygonCoef();
 
         int n = elements.size();
+        if (n < 2) {
+            return new Pair<>(true, null);
+        }
+
         int over = 0, under = 0, on = 0;
         int start = n - 2;
 
@@ -132,6 +137,7 @@ public class Polygon {
 
     public void drawFill(GL2 gl2) {
         polygonCoef();
+        Pair<Boolean, Orientation> convex = convexityTest();
 
         int n = elements.size();
         int xmin = Integer.MAX_VALUE, xmax = Integer.MIN_VALUE;
@@ -171,7 +177,7 @@ public class Polygon {
                     }
                 } else {
                     double x = (-element.edge.b * y - element.edge.c) / (double) element.edge.a;
-                    if (element.left) {
+                    if (element.left ^ (convex.getValue() == Orientation.COUNTERCLOCKWISE)) {
                         if (L < x) {
                             L = x;
                         }

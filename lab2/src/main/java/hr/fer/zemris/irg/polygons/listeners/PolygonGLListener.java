@@ -8,7 +8,6 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
 import hr.fer.zemris.irg.polygons.PolygonData;
-import hr.fer.zemris.irg.polygons.models.Polygon;
 
 /**
  * Created by Dominik on 27.3.2017..
@@ -46,7 +45,7 @@ public class PolygonGLListener implements GLEventListener {
         gl2.glLoadIdentity();
         gl2.glPointSize(1);
 
-        if (data.fill && data.polygon.convexityTest().getValue() == Polygon.Orientation.CLOCKWISE) {
+        if (data.fill && data.polygon.convexityTest().getKey()) {
             data.polygon.drawFill(gl2);
         } else {
             data.polygon.draw(gl2);
