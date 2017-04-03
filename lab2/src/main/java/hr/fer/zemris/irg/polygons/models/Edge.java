@@ -23,7 +23,7 @@ public class Edge {
 
         int a = dy;
         int b = -dx;
-        int c = start.x * (-dy) + start.y * dx;
+        int c = end.x * start.y - end.y * start.x;
         return new Edge(a, b, c);
     }
 }

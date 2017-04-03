@@ -15,6 +15,11 @@ public class Polygon {
     private List<PolygonElement> elements = new ArrayList<>();
     private int nVertices = 0;
 
+    public void removeLastPoint() {
+        elements.remove(elements.size() - 1);
+        nVertices--;
+    }
+
     public enum Orientation {
         CLOCKWISE,
         COUNTERCLOCKWISE

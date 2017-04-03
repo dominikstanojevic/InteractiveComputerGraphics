@@ -27,6 +27,12 @@ public class PolygonKeyListener extends KeyAdapter {
         } else if(data.draw && code == KeyEvent.VK_K) {
             data.convexity = !data.convexity;
         } else if(code == KeyEvent.VK_N) {
+            if(data.convexity) {
+                if(!data.polygon.convexityTest().getKey()) {
+                    data.polygon.removeLastPoint();
+                }
+            }
+
             data.draw = !data.draw;
             data.convexity = false;
             data.fill = false;
