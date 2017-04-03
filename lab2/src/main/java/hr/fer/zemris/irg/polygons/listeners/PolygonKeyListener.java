@@ -24,11 +24,15 @@ public class PolygonKeyListener extends KeyAdapter {
         int code = e.getKeyCode();
         if (data.draw && code == KeyEvent.VK_P) {
             data.fill = !data.fill;
-        } else if(data.draw && code == KeyEvent.VK_K) {
-            data.convexity = !data.convexity;
-        } else if(code == KeyEvent.VK_N) {
-            if(data.convexity) {
-                if(!data.polygon.convexityTest().getKey()) {
+        } else if (data.draw && code == KeyEvent.VK_K) {
+            if (data.polygon.convexityTest().getKey()) {
+                data.convexity = !data.convexity;
+            } else {
+                System.out.println("Polygon is concave.");
+            }
+        } else if (code == KeyEvent.VK_N) {
+            if (data.convexity) {
+                if (!data.polygon.convexityTest().getKey()) {
                     data.polygon.removeLastPoint();
                 }
             }
@@ -36,7 +40,7 @@ public class PolygonKeyListener extends KeyAdapter {
             data.draw = !data.draw;
             data.convexity = false;
             data.fill = false;
-            if(data.draw) {
+            if (data.draw) {
                 data.polygon = new Polygon();
             }
         }
