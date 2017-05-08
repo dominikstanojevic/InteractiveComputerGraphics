@@ -25,8 +25,8 @@ public interface IVector {
     double scalarProduct(IVector other);
     IVector nVectorProduct(IVector other);
     IVector nFromHomogeneous();
-    IMatrix toRowMatrix();
-    IMatrix toColumnMatrix();
+    IMatrix toRowMatrix(boolean liveView);
+    IMatrix toColumnMatrix(boolean liveView);
     double[] toArray();
     String toString(int precision);
 }

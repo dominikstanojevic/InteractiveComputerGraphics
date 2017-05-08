@@ -1,5 +1,9 @@
 package hr.fer.zemris.irg.lab1.linalg.matrices;
 
+import hr.fer.zemris.irg.lab1.linalg.vectors.IVector;
+import hr.fer.zemris.irg.lab1.linalg.vectors.Vector;
+import hr.fer.zemris.irg.lab1.linalg.vectors.VectorMatrixView;
+
 import java.util.Locale;
 import java.util.StringJoiner;
 import java.util.function.BiFunction;
@@ -17,8 +21,8 @@ public abstract class AbstractMatrix implements IMatrix {
             int rows = getColsCount();
             int cols = getRowsCount();
             IMatrix transpose = newInstance(rows, cols);
-            for(int i = 0; i < rows; i++) {
-                for(int j = 0; j < cols; j++) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
                     double value = get(j, i);
                     transpose.set(i, j, value);
                 }
@@ -66,26 +70,28 @@ public abstract class AbstractMatrix implements IMatrix {
 
     @Override
     public IMatrix nMultiply(IMatrix other) {
-       if(getColsCount() != other.getRowsCount()) {
-           throw new RuntimeException("Invalid matrices.");
-       }
+        if (getColsCount() != other.getRowsCount()) {
+            throw new RuntimeException(
+                    "Invalid matrices, nCol: " + getColsCount() + ", nRow: " + other.getRowsCount() + ".");
+        }
 
-       int m = getColsCount();       int rows = getRowsCount();
-       int cols = other.getColsCount();
-       IMatrix mul = newInstance(rows, cols);
+        int m = getColsCount();
+        int rows = getRowsCount();
+        int cols = other.getColsCount();
+        IMatrix mul = newInstance(rows, cols);
 
-       for(int i = 0; i < rows; i++) {
-           for(int j = 0; j < cols; j++) {
-               double sum = 0;
-               for(int k = 0; k < m; k++) {
-                   sum += get(i, k) * other.get(k, j);
-               }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                double sum = 0;
+                for (int k = 0; k < m; k++) {
+                    sum += get(i, k) * other.get(k, j);
+                }
 
-               mul.set(i, j, sum);
-           }
-       }
+                mul.set(i, j, sum);
+            }
+        }
 
-       return mul;
+        return mul;
     }
 
     @Override
@@ -95,14 +101,14 @@ public abstract class AbstractMatrix implements IMatrix {
         }
 
         int order = getRowsCount();
-        if(order == 1) {
+        if (order == 1) {
             return get(0, 0);
         }
 
         double determinant = 0;
         int sign = 1;
 
-        for(int i = 0; i < order; i++) {
+        for (int i = 0; i < order; i++) {
             IMatrix cofactor = subMatrix(0, i, true);
             determinant += sign * get(0, i) * cofactor.determinant();
 
@@ -115,15 +121,15 @@ public abstract class AbstractMatrix implements IMatrix {
     @Override
     public IMatrix nInvert() {
         double determinant = determinant();
-        if(determinant == 0) {
+        if (determinant == 0) {
             throw new RuntimeException("Cannot get inverse of singular matrix.");
         }
 
         int order = getRowsCount();
         IMatrix minors = newInstance(order, order);
 
-        for(int i = 0; i < order; i++) {
-            for(int j = 0; j < order; j++) {
+        for (int i = 0; i < order; i++) {
+            for (int j = 0; j < order; j++) {
                 IMatrix sub = subMatrix(i, j, true);
                 double value = ((i + j) % 2 == 1 ? -1 : 1) * sub.determinant() / determinant;
                 minors.set(j, i, value);
@@ -135,7 +141,7 @@ public abstract class AbstractMatrix implements IMatrix {
 
     @Override
     public IMatrix subMatrix(int row, int column, boolean liveView) {
-        if(liveView) {
+        if (liveView) {
             return new MatrixSubMatrixView(this, row, column);
         } else {
             int rows = getRowsCount() - 1;
@@ -143,12 +149,12 @@ public abstract class AbstractMatrix implements IMatrix {
 
             IMatrix sub = newInstance(rows, cols);
 
-            for(int i = 0, iIndex = 0; i <= rows; i++) {
-                if(i == row) {
+            for (int i = 0, iIndex = 0; i <= rows; i++) {
+                if (i == row) {
                     continue;
                 }
 
-                for(int j = 0, jIndex = 0; j <= cols; j++) {
+                for (int j = 0, jIndex = 0; j <= cols; j++) {
                     if (j == column) {
                         continue;
                     }
@@ -172,7 +178,7 @@ public abstract class AbstractMatrix implements IMatrix {
         int cols = getColsCount();
 
         double[][] arr = new double[rows][cols];
-        for(int i = 0; i < rows; i++) {
+        for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 arr[i][j] = get(i, j);
             }
@@ -191,9 +197,9 @@ public abstract class AbstractMatrix implements IMatrix {
         StringJoiner global = new StringJoiner("\n");
 
         String format = "%." + precision + "f";
-        for(int i = 0, rows = getRowsCount(); i < rows; i++) {
+        for (int i = 0, rows = getRowsCount(); i < rows; i++) {
             StringJoiner sj = new StringJoiner(", ", "[", "]");
-            for(int j = 0, cols = getColsCount(); j < cols; j++) {
+            for (int j = 0, cols = getColsCount(); j < cols; j++) {
                 String num = String.format(Locale.US, format, get(i, j));
                 sj.add(num);
             }
@@ -204,9 +210,36 @@ public abstract class AbstractMatrix implements IMatrix {
         return global.toString();
     }
 
+    @Override
+    public IVector toVector(boolean liveView) {
+        if (liveView) {
+            return new VectorMatrixView(this);
+        } else {
+            if (getColsCount() == 1) {
+                int n = getRowsCount();
+                double[] arr = new double[n];
+                for (int i = 0; i < n; i++) {
+                    arr[i] = get(i, 0);
+                }
+
+                return new Vector(arr);
+            } else if (getRowsCount() == 1) {
+                int n = getColsCount();
+                double[] arr = new double[n];
+                for (int i = 0; i < n; i++) {
+                    arr[i] = get(0, i);
+                }
+
+                return new Vector(arr);
+            } else {
+                throw new RuntimeException("Both nCol and nRow are bigger than 1.");
+            }
+        }
+    }
+
     private static void elementWiseUnaryOperation(IMatrix matrix, Function<Double, Double> function) {
-        for(int i = 0, rows = matrix.getRowsCount(); i < rows; i++) {
-            for(int j = 0, cols = matrix.getColsCount(); j < cols; j++) {
+        for (int i = 0, rows = matrix.getRowsCount(); i < rows; i++) {
+            for (int j = 0, cols = matrix.getColsCount(); j < cols; j++) {
                 double value = function.apply(matrix.get(i, j));
                 matrix.set(i, j, value);
             }
@@ -217,8 +250,8 @@ public abstract class AbstractMatrix implements IMatrix {
             IMatrix first, IMatrix second, BiFunction<Double, Double, Double> function) {
         checkDimensions(first, second);
 
-        for(int i = 0, rows = first.getRowsCount(); i < rows; i++) {
-            for(int j = 0, cols = first.getColsCount(); j < cols; j++) {
+        for (int i = 0, rows = first.getRowsCount(); i < rows; i++) {
+            for (int j = 0, cols = first.getColsCount(); j < cols; j++) {
                 double value = function.apply(first.get(i, j), second.get(i, j));
                 first.set(i, j, value);
             }

@@ -108,6 +108,18 @@ public class ObjectModel {
         }
     }
 
+    public Face3D[] getTriangles() {
+        return triangles;
+    }
+
+    public Vertex3D getVertex3DForIndex(int index) {
+        if (index <= 0 || index > vertices.length) {
+            throw new RuntimeException("Invalid index: " + index + ".");
+        }
+
+        return vertices[index - 1];
+    }
+
     public static ObjectModel parse(Scanner input) {
         List<Vertex3D> vertices = new ArrayList<>();
         List<Face3D> triangles = new ArrayList<>();

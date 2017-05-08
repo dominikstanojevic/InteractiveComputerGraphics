@@ -1,6 +1,7 @@
 package hr.fer.zemris.irg.lab1.linalg.vectors;
 
 import hr.fer.zemris.irg.lab1.linalg.matrices.IMatrix;
+import hr.fer.zemris.irg.lab1.linalg.matrices.Matrix;
 import hr.fer.zemris.irg.lab1.linalg.matrices.MatrixVectorView;
 
 import java.util.Locale;
@@ -50,7 +51,7 @@ public abstract class AbstractVector implements IVector {
     @Override
     public double norm() {
         double total = 0;
-        for(int i = 0, size = getDimension(); i < size; i++) {
+        for (int i = 0, size = getDimension(); i < size; i++) {
             double value = get(i);
             total += value * value;
         }
@@ -82,7 +83,7 @@ public abstract class AbstractVector implements IVector {
         checkDimensions(this, other);
 
         double dot = 0;
-        for(int i = 0, size = getDimension(); i < size; i++) {
+        for (int i = 0, size = getDimension(); i < size; i++) {
             dot += get(i) * other.get(i);
         }
 
@@ -91,7 +92,7 @@ public abstract class AbstractVector implements IVector {
 
     @Override
     public IVector nVectorProduct(IVector other) {
-        if(this.getDimension() != 3 || other.getDimension() != 3) {
+        if (this.getDimension() != 3 || other.getDimension() != 3) {
             throw new RuntimeException("Given vectors are not three dimensional.");
         }
 
@@ -118,7 +119,9 @@ public abstract class AbstractVector implements IVector {
 
         double h = get(size);
         IVector vector = newInstance(size);
-        elementWiseUnaryOperation(vector, v -> v / h);
+        for (int i = 0; i < size; i++) {
+            vector.set(i, this.get(i) / h);
+        }
         return vector;
     }
 
@@ -127,7 +130,7 @@ public abstract class AbstractVector implements IVector {
         int size = getDimension();
         double[] array = new double[size];
 
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             array[i] = get(i);
         }
 
@@ -139,7 +142,7 @@ public abstract class AbstractVector implements IVector {
         checkLength(length);
 
         IVector vector = newInstance(length);
-        for(int i = 0, size = getDimension(); i < length; i++) {
+        for (int i = 0, size = getDimension(); i < length; i++) {
             int index = start + i;
             if (index >= size) {
                 vector.set(i, 0);
@@ -159,14 +162,14 @@ public abstract class AbstractVector implements IVector {
 
     @Override
     public String toString() {
-       return toString(3);
+        return toString(3);
     }
 
     @Override
     public String toString(int precision) {
         StringJoiner sj = new StringJoiner(", ", "[", "]");
         String format = "%." + precision + "f";
-        for(int i = 0, size = getDimension(); i < size; i++) {
+        for (int i = 0, size = getDimension(); i < size; i++) {
             String num = String.format(Locale.US, format, get(i));
             sj.add(num);
         }
@@ -175,13 +178,29 @@ public abstract class AbstractVector implements IVector {
     }
 
     @Override
-    public IMatrix toRowMatrix() {
-        return new MatrixVectorView(this, true);
+    public IMatrix toRowMatrix(boolean liveView) {
+        if (liveView) {
+            return new MatrixVectorView(this, true);
+        } else {
+            double[][] mat = new double[1][this.getDimension()];
+            mat[0] = this.toArray();
+            return new Matrix(mat, false);
+        }
     }
 
     @Override
-    public IMatrix toColumnMatrix() {
-        return new MatrixVectorView(this, false);
+    public IMatrix toColumnMatrix(boolean liveView) {
+        if (liveView) {
+            return new MatrixVectorView(this, false);
+        } else {
+            int n = this.getDimension();
+            double[][] mat = new double[n][1];
+            for (int i = 0; i < n; i++) {
+                mat[i][0] = this.get(i);
+            }
+
+            return new Matrix(mat, false);
+        }
     }
 
     private static void checkDimensions(IVector first, IVector second) {
@@ -191,17 +210,17 @@ public abstract class AbstractVector implements IVector {
     }
 
     private static void elementWiseUnaryOperation(IVector vector, Function<Double, Double> function) {
-        for(int i = 0, size = vector.getDimension(); i < size; i++) {
+        for (int i = 0, size = vector.getDimension(); i < size; i++) {
             double value = function.apply(vector.get(i));
             vector.set(i, value);
         }
     }
 
-    private static void elementWiseBinaryOperation(IVector first, IVector second, BiFunction<Double, Double, Double>
-            function) {
+    private static void elementWiseBinaryOperation(
+            IVector first, IVector second, BiFunction<Double, Double, Double> function) {
         checkDimensions(first, second);
 
-        for(int i = 0, size = first.getDimension(); i < size; i++) {
+        for (int i = 0, size = first.getDimension(); i < size; i++) {
             double value = function.apply(first.get(i), second.get(i));
             first.set(i, value);
         }

@@ -25,7 +25,7 @@ public class Second {
         }
 
         IMatrix input = new Matrix(left, false);
-        IMatrix output = (new Vector(right)).toColumnMatrix();
+        IMatrix output = (new Vector(right)).toColumnMatrix(false);
 
         IMatrix result = input.nInvert().nMultiply(output);
         System.out.println(result);

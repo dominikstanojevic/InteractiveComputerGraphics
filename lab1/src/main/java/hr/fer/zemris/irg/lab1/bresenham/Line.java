@@ -54,11 +54,11 @@ public class Line {
     private Utils.Pair<Point, Point> getControlPoints() {
         IMatrix matrix = getTransformationMatrix();
 
-        IMatrix resStart = new Vector(new double[] { 4, 0, 1 }).toRowMatrix().nMultiply(matrix);
+        IMatrix resStart = new Vector(new double[] { 4, 0, 1 }).toRowMatrix(false).nMultiply(matrix);
         Point cS = new Point((int) Math.round(resStart.get(0, 0)), (int) Math.round(resStart.get(0, 1)));
 
         double length = Utils.length(start, end);
-        IMatrix resEnd = new Vector(new double[] { 4, length, 1 }).toRowMatrix().nMultiply(matrix);
+        IMatrix resEnd = new Vector(new double[] { 4, length, 1 }).toRowMatrix(false).nMultiply(matrix);
         Point cE = new Point((int) Math.round(resEnd.get(0, 0)), (int) Math.round(resEnd.get(0, 1)));
 
         return new Utils.Pair<>(cS, cE);

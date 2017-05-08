@@ -25,7 +25,7 @@ public class Utils {
         c[1] = secondParams[2];
 
         IMatrix matrix = new Matrix(m, false);
-        IMatrix constants = new Vector(c).toColumnMatrix();
+        IMatrix constants = new Vector(c).toColumnMatrix(false);
 
         try {
             IMatrix coordinates = matrix.nInvert().nMultiply(constants);

@@ -1,5 +1,7 @@
 package hr.fer.zemris.irg.lab1.linalg.matrices;
 
+import hr.fer.zemris.irg.lab1.linalg.vectors.IVector;
+
 /**
  * Created by Dominik on 14.3.2017..
  */
@@ -23,5 +25,5 @@ public interface IMatrix {
     IMatrix nInvert();
     double[][] toArray();
     String toString(int precision);
-    //TODO : IVector toVector(boolean liveView);
+    IVector toVector(boolean liveView);
 }

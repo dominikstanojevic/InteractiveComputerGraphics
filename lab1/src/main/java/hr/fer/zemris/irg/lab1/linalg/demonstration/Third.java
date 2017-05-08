@@ -32,7 +32,7 @@ public class Third {
         }
 
         IMatrix matrix = new Matrix(points, false).nTranspose(true);
-        IMatrix vector = (new Vector(t)).toColumnMatrix();
+        IMatrix vector = (new Vector(t)).toColumnMatrix(false);
 
         IMatrix result = matrix.nInvert().nMultiply(vector);
         System.out.println(result);
