@@ -6,6 +6,7 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import hr.fer.zemris.irg.lab1.linalg.vectors.IVector;
 import hr.fer.zemris.irg.lab1.linalg.vectors.Vector;
+import hr.fer.zemris.irg.lineremoval.second.RemovalMethod;
 import hr.fer.zemris.irg.shapes3D.models.ObjectModel;
 
 import java.awt.Frame;
@@ -53,6 +54,7 @@ public class ProjectionFrame extends Frame {
         public ObjectModel model;
         public double angle;
         public IVector eye;
+        public RemovalMethod method = RemovalMethod.WITHOUT_REMOVAL;
 
         public ProjectionData(ObjectModel model) {
             this.model = model;

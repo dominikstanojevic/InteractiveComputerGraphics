@@ -5,7 +5,9 @@ import hr.fer.zemris.irg.shapes3D.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
@@ -15,10 +17,13 @@ import java.util.StringJoiner;
 public class ObjectModel {
     private Vertex3D[] vertices;
     private Face3D[] triangles;
+    private Map<Face3D, Boolean> visible = new HashMap<>();
 
     public ObjectModel(Vertex3D[] vertices, Face3D[] triangles) {
         this.vertices = vertices;
         this.triangles = triangles;
+
+        drawAll();
     }
 
     public ObjectModel copy() {
@@ -118,6 +123,47 @@ public class ObjectModel {
         }
 
         return vertices[index - 1];
+    }
+
+    public boolean isVisible(Face3D polygon) {
+        return visible.get(polygon);
+    }
+
+    public void drawAll() {
+        for (Face3D face : triangles) {
+            visible.put(face, true);
+        }
+    }
+
+    public void determineFaceVisibilities1(IVector eye) {
+        for (Face3D triangle : triangles) {
+            Vertex3D v = vertices[triangle.getIndex(0) - 1];
+            IVector normal = Utils.getNormalForTriangle(v, vertices[triangle.getIndex(1) - 1],
+                    vertices[triangle.getIndex(2) - 1]);
+
+            double d = -normal.get(0) * v.x - normal.get(1) * v.y - normal.get(2) * v.z;
+            double r = normal.get(0) * eye.get(0) + normal.get(1) * eye.get(1) + normal.get(2) * eye.get(2) + d;
+            if (r >= 0) {
+                visible.put(triangle, true);
+            } else {
+                visible.put(triangle, false);
+            }
+        }
+    }
+
+    public void determineFaceVisibilities2(IVector eye) {
+        for (Face3D triangle : triangles) {
+            Vertex3D first = vertices[triangle.getIndex(0) - 1];
+            Vertex3D second = vertices[triangle.getIndex(1) - 1];
+            Vertex3D third = vertices[triangle.getIndex(2) - 1];
+
+            IVector center = Utils.getCenterForTriangle(first, second, third);
+            IVector e = eye.nSub(center);
+
+            IVector normal = Utils.getNormalForTriangle(first, second, third);
+
+            visible.put(triangle, normal.scalarProduct(e) >= 0);
+        }
     }
 
     public static ObjectModel parse(Scanner input) {

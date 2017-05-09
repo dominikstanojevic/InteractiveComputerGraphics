@@ -1,4 +1,4 @@
-package hr.fer.zemris.irg.projections.third;
+package hr.fer.zemris.irg.lineremoval.second;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -7,12 +7,11 @@ import hr.fer.zemris.irg.lab1.linalg.ics.ICG;
 import hr.fer.zemris.irg.lab1.linalg.matrices.IMatrix;
 import hr.fer.zemris.irg.lab1.linalg.vectors.IVector;
 import hr.fer.zemris.irg.lab1.linalg.vectors.Vector;
-import hr.fer.zemris.irg.projections.AbstractProjectionListener;
 import hr.fer.zemris.irg.projections.ProjectionFrame;
 import hr.fer.zemris.irg.projections.Utils;
+import hr.fer.zemris.irg.projections.third.ThirdProjectionGLListener;
 import hr.fer.zemris.irg.shapes3D.models.Face3D;
 import hr.fer.zemris.irg.shapes3D.models.ObjectModel;
-import hr.fer.zemris.irg.shapes3D.models.Vertex3D;
 
 import java.awt.EventQueue;
 import java.io.IOException;
@@ -20,13 +19,9 @@ import java.io.IOException;
 /**
  * Created by Dominik on 7.5.2017..
  */
-public class ThirdProjectionGLListener extends AbstractProjectionListener {
-    protected IMatrix pm;
-
-    public ThirdProjectionGLListener(ProjectionFrame.ProjectionData data) {
+public class SecondRemovalListener extends ThirdProjectionGLListener {
+    public SecondRemovalListener(ProjectionFrame.ProjectionData data) {
         super(data);
-
-        pm = ICG.buildFrustumMatrix(-0.5, 0.5, -0.5, 0.5, 1, 100);
     }
 
     @Override
@@ -41,28 +36,29 @@ public class ThirdProjectionGLListener extends AbstractProjectionListener {
                 ICG.lookAtMatrix(data.eye, new Vector(new double[] { 0, 0, 0 }), new Vector(new double[] { 0, 1, 0 }));
         IMatrix m = tp.nMultiply(pm);
 
+        data.method.execute(data.model, data.eye);
         for (Face3D face : data.model.getTriangles()) {
+            if (!data.model.isVisible(face)) {
+                continue;
+            }
+
+            IVector first = getCoordinatesForVertex(data.model.getVertex3DForIndex(face.getIndex(0)), m);
+            IVector second = getCoordinatesForVertex(data.model.getVertex3DForIndex(face.getIndex(1)), m);
+            IVector third = getCoordinatesForVertex(data.model.getVertex3DForIndex(face.getIndex(2)), m);
+
+            if (!data.method.projection(first, second, third)) {
+                continue;
+            }
+
             gl2.glColor3d(255, 0, 0);
             gl2.glBegin(GL.GL_LINE_LOOP);
-            for (int i = 0; i < 3; i++) {
-                int index = face.getIndex(i);
-                Vertex3D vertex = data.model.getVertex3DForIndex(index);
-                IVector transformed = getCoordinatesForVertex(vertex, m);
-                gl2.glVertex3d(transformed.get(0), transformed.get(1), transformed.get(2));
-            }
+            gl2.glVertex3d(first.get(0), first.get(1), first.get(2));
+            gl2.glVertex3d(second.get(0), second.get(1), second.get(2));
+            gl2.glVertex3d(third.get(0), third.get(1), third.get(2));
             gl2.glEnd();
         }
 
         gl2.glFlush();
-    }
-
-    protected IVector getCoordinatesForVertex(Vertex3D vertex, IMatrix transformation) {
-        IMatrix vector = new Vector(new double[] { vertex.x, vertex.y, vertex.z, 1 }).toRowMatrix(true);
-        return vector.nMultiply(transformation).toVector(true).nFromHomogeneous();
-    }
-
-    @Override
-    public void setProjectionMatrix(GL2 gl2) {
     }
 
     public static void main(String[] args) throws IOException {
@@ -73,6 +69,6 @@ public class ThirdProjectionGLListener extends AbstractProjectionListener {
 
         ObjectModel model = Utils.preprocessModel(path);
         ProjectionFrame.ProjectionData data = new ProjectionFrame.ProjectionData(model);
-        EventQueue.invokeLater(() -> new ProjectionFrame(data, new ThirdProjectionGLListener(data)));
+        EventQueue.invokeLater(() -> new RemovalFrame(data, new SecondRemovalListener(data)));
     }
 }

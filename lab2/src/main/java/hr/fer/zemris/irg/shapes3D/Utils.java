@@ -25,4 +25,12 @@ public class Utils {
         double[] c = Arrays.stream(coordinates).mapToDouble(s -> Double.parseDouble(s.trim())).toArray();
         return new Vertex3D(c[0], c[1], c[2]);
     }
+
+    public static IVector getCenterForTriangle(Vertex3D first, Vertex3D second, Vertex3D third) {
+        IVector firstAsVector = first.toVector();
+        IVector secondAsVector = second.toVector();
+        IVector thirdAsVector = third.toVector();
+
+        return firstAsVector.add(secondAsVector).add(thirdAsVector).scalarMultiply(1. / 3);
+    }
 }

@@ -48,11 +48,34 @@ public class ICG {
         mat[2][0] = (r + l) / dw;
         mat[1][1] = n2 / dh;
         mat[2][1] = (t + b) / dh;
-        mat[2][2] = (f + n) / d;
-        mat[3][2] = (f * n2) / d;
+        mat[2][2] = -(f + n) / d;
+        mat[3][2] = -(f * n2) / d;
         mat[2][3] = -1;
 
         return new Matrix(mat, false);
+    }
+
+    public static boolean isAntiClockWise(IVector firstPoint, IVector secondPoint, IVector thirdPoint) {
+        if (thirdPoint.scalarProduct(getEdgeForPoints(firstPoint, secondPoint)) < 0) {
+            return false;
+        }
+        if (firstPoint.scalarProduct(getEdgeForPoints(secondPoint, thirdPoint)) < 0) {
+            return false;
+        }
+        if (secondPoint.scalarProduct(getEdgeForPoints(thirdPoint, firstPoint)) < 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static IVector getEdgeForPoints(IVector start, IVector end) {
+        double dy = start.get(1) - end.get(1);
+        double dx = start.get(0) - end.get(0);
+
+        double c = start.get(0) * end.get(1) - start.get(1) * end.get(0);
+
+        return new Vector(new double[] { dy, -dx, c });
     }
 
     public static void main(String[] args) {
@@ -61,7 +84,7 @@ public class ICG {
         IMatrix pr = buildFrustumMatrix(-0.5, 0.5, -0.5, 0.5, 1, 100);
         IMatrix m = tp.nMultiply(pr);
 
-        IMatrix test = new Vector(new double[]{-1, -1, -1, 1}).toRowMatrix(false);
+        IMatrix test = new Vector(new double[] { -1, -1, -1, 1 }).toRowMatrix(false);
         System.out.println(tp);
         System.out.println(pr);
         System.out.println(m);
