@@ -1,6 +1,6 @@
 package hr.fer.zemris.irg.lineremoval.second;
 
-import hr.fer.zemris.irg.lab1.linalg.ics.ICG;
+import hr.fer.zemris.irg.lab1.linalg.icg.ICG;
 import hr.fer.zemris.irg.lab1.linalg.vectors.IVector;
 import hr.fer.zemris.irg.shapes3D.models.ObjectModel;
 

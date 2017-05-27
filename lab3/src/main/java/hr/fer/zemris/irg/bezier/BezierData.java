@@ -11,7 +11,7 @@ public class BezierData {
     public List<Point> points = new ArrayList<>();
 
     public Integer current = null;
-    public static final int DIV = 50;
+    public static final int DIV = 100;
     public static final int WIDTH = 5;
     public static final int HEIGHT = 5;
 

@@ -3,7 +3,7 @@ package hr.fer.zemris.irg.projections.third;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import hr.fer.zemris.irg.lab1.linalg.ics.ICG;
+import hr.fer.zemris.irg.lab1.linalg.icg.ICG;
 import hr.fer.zemris.irg.lab1.linalg.matrices.IMatrix;
 import hr.fer.zemris.irg.lab1.linalg.vectors.IVector;
 import hr.fer.zemris.irg.lab1.linalg.vectors.Vector;

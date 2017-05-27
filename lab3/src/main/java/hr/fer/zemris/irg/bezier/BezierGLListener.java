@@ -10,6 +10,7 @@ import hr.fer.zemris.irg.lab1.linalg.matrices.IMatrix;
 import hr.fer.zemris.irg.lab1.linalg.matrices.Matrix;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +40,7 @@ public class BezierGLListener implements GLEventListener {
         gl2.glClearColor(0, 255, 0, 1);
         gl2.glClear(GL.GL_COLOR_BUFFER_BIT);
 
-
-        if(data.points.size() > 1) {
+        if (data.points.size() > 1) {
             drawPolygon(gl2);
             drawBezier(gl2, data.points);
 
@@ -56,31 +56,31 @@ public class BezierGLListener implements GLEventListener {
         int n = interpolated.size() - 1;
         int[] factors = factors(n);
 
-        //punimo matricu B
-        IMatrix B = new Matrix(n + 1, n + 1);
-        for(int i = 0; i <= n; i++) {
+        //punimo matricu T
+        IMatrix T = new Matrix(n + 1, n + 1);
+        for (int i = 0; i <= n; i++) {
             double t = ((double) i) / n;
-            for(int j = 0; j <= n; j++) {
-                if(j == 0) {
-                    B.set(i, j, factors[j] * Math.pow(1 - t, n));
+            for (int j = 0; j <= n; j++) {
+                if (j == 0) {
+                    T.set(i, j, factors[j] * Math.pow(1 - t, n));
                 } else if (j == n) {
-                    B.set(i, j, factors[j] * Math.pow(t, n));
+                    T.set(i, j, factors[j] * Math.pow(t, n));
                 } else {
-                    B.set(i, j, factors[j] * Math.pow(t, j) * Math.pow(1 - t, n - j));
+                    T.set(i, j, factors[j] * Math.pow(t, j) * Math.pow(1 - t, n - j));
                 }
             }
         }
 
         //punimo matricu P
         IMatrix P = new Matrix(n + 1, 2);
-        for(int i = 0; i <= n; i++) {
+        for (int i = 0; i <= n; i++) {
             Point p = interpolated.get(i);
             P.set(i, 0, p.x);
             P.set(i, 1, p.y);
         }
 
-        IMatrix R = B.nInvert().nMultiply(P);
-        for(int i = 0; i <= n; i++) {
+        IMatrix R = T.nInvert().nMultiply(P);
+        for (int i = 0; i <= n; i++) {
             Point p = new Point((int) Math.round(R.get(i, 0)), (int) Math.round(R.get(i, 1)));
             points.add(p);
         }
@@ -108,7 +108,7 @@ public class BezierGLListener implements GLEventListener {
         gl2.glBegin(GL.GL_LINE_STRIP);
         for (int i = 0; i <= BezierData.DIV; i++) {
             double t = ((double) i) / BezierData.DIV;
-            Point p = new Point();
+            Point2D.Double p = new Point2D.Double();
             for (int j = 0; j <= n; j++) {
                 double b;
                 if (j == 0) {
@@ -123,7 +123,7 @@ public class BezierGLListener implements GLEventListener {
                 p.y += b * points.get(j).y;
             }
 
-            gl2.glVertex2i(p.x, p.y);
+            gl2.glVertex2d(p.x, p.y);
         }
         gl2.glEnd();
     }
@@ -133,7 +133,8 @@ public class BezierGLListener implements GLEventListener {
         gl2.glBegin(GL.GL_LINE_STRIP);
         for (Point p : data.points) {
             gl2.glVertex2i(p.x, p.y);
-        } gl2.glEnd();
+        }
+        gl2.glEnd();
     }
 
     @Override

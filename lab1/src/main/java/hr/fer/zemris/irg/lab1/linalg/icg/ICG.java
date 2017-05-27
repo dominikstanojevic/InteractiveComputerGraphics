@@ -1,4 +1,4 @@
-package hr.fer.zemris.irg.lab1.linalg.ics;
+package hr.fer.zemris.irg.lab1.linalg.icg;
 
 import hr.fer.zemris.irg.lab1.linalg.matrices.IMatrix;
 import hr.fer.zemris.irg.lab1.linalg.matrices.Matrix;
@@ -10,17 +10,29 @@ import hr.fer.zemris.irg.lab1.linalg.vectors.Vector;
  */
 public class ICG {
     public static IMatrix translate3D(double dx, double dy, double dz) {
-        return null;
+        double[][] matrix = new double[4][4];
+        matrix[0] = new double[] { 1, 0, 0, 0 };
+        matrix[1] = new double[] { 0, 1, 0, 0 };
+        matrix[2] = new double[] { 0, 0, 1, 0 };
+        matrix[3] = new double[] { dx, dy, dz, 1 };
+
+        return new Matrix(matrix, false);
     }
 
     public static IMatrix scale3D(double sx, double sy, double sz) {
-        return null;
+        double[][] matrix = new double[4][4];
+        matrix[0] = new double[] { sx, 0, 0, 0 };
+        matrix[1] = new double[] { 0, sy, 0, 0 };
+        matrix[2] = new double[] { 0, 0, sz, 0 };
+        matrix[3] = new double[] { 0, 0, 0, 1 };
+
+        return new Matrix(matrix, false);
     }
 
     public static IMatrix lookAtMatrix(IVector eye, IVector center, IVector viewUp) {
         IVector zNorm = eye.nSub(center).normalize();
-        IVector xNorm = viewUp.nVectorProduct(zNorm).normalize();
-        IVector yNorm = zNorm.nVectorProduct(xNorm).normalize();
+        IVector xNorm = zNorm.nVectorProduct(viewUp).normalize();
+        IVector yNorm = xNorm.nVectorProduct(zNorm).normalize();
 
         double[][] matrix = new double[4][4];
         for (int i = 0; i < 3; i++) {
